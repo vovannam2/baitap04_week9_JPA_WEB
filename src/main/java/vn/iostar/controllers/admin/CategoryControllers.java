@@ -17,7 +17,7 @@ import jakarta.servlet.http.Part;
 import vn.iostar.entity.Category;
 import vn.iostar.services.ICategoryServices;
 import vn.iostar.services.impl.CategoryServices;
-import vn.iostar.utils.constant;
+import static vn.iostar.utils.constant.*;
 
 
 
@@ -67,37 +67,43 @@ public class CategoryControllers extends HttpServlet {
 		 Category category = new Category();
 		 category.setCategoryname(categoryname);
 		 category.setStatus(status);
+		 
 		 String fname = "";
-		 String uploadPath = constant.UPLOAD_DIRECTORY; // upload vào thư mục bất kỳ
+		 String uploadPath = UPLOAD_DIRECTORY; // upload vào thư mục bất kỳ
 		 File uploadDir = new File(uploadPath);
-		 if (!uploadDir.exists())
-		 uploadDir.mkdir();
+		 if (!uploadDir.exists()) {
+			 uploadDir.mkdir();
+		 }
+		 
 		 try {
-		 Part part = req.getPart("images1");
-		 if (part.getSize() > 0) {
-		 String filename = Paths.get(part.getSubmittedFileName()).getFileName().toString();
-		 int index = filename.lastIndexOf(".");
-		 String ext = filename.substring(index + 1);
-		 fname = System.currentTimeMillis() + "." + ext;
-		 part.write(uploadPath + "/" + fname);
-		 category.setImages(fname);
-		 } else if (images != null) {
-		 category.setImages(images);
-		 } else {
-		 category.setImages("avatar.png");
-		 }
+			 Part part = req.getPart("images1");
+			 if (part.getSize() > 0) {
+				 String filename = Paths.get(part.getSubmittedFileName()).getFileName().toString();
+				 // đổi tên file 
+				 int index = filename.lastIndexOf(".");
+				 String ext = filename.substring(index + 1);
+				 
+				 fname = System.currentTimeMillis() + "." + ext;
+				 // upload file 
+				 part.write(uploadPath + "/" + fname);
+				 // ghi tên file vào data 
+				 category.setImages(fname);
+		 
+			 } else if (images != null) {
+				 category.setImages(images);
+			 } else {
+				 category.setImages("avatar.png");
+			 }
 		 } catch (FileNotFoundException fne) {
-		 fne.printStackTrace();
+			 fne.printStackTrace();
 		 }
-		 
-		 
-		 
 		 
 		 // đưa model vào phương thức insert
 		 cateService.insert(category);
 		 // chuyển trang
 		 resp.sendRedirect(req.getContextPath() + "/admin/categories");
 		 }
+		 
 		 if (url.contains("/admin/category/update")) {
 		 // lấy dữ liệu từ form
 		 int categoryid = Integer.parseInt(req.getParameter("categoryid"));
@@ -111,7 +117,7 @@ public class CategoryControllers extends HttpServlet {
 		 category.setStatus(status);
 		 // lưu hình cũ 
 		 String fname = "";
-		 String uploadPath = constant.UPLOAD_DIRECTORY; // upload vào thư mục bất kỳ
+		 String uploadPath = UPLOAD_DIRECTORY; // upload vào thư mục bất kỳ
 		 File uploadDir = new File(uploadPath);
 		 if (!uploadDir.exists())
 		 uploadDir.mkdir();
